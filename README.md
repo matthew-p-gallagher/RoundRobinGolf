@@ -1,2 +1,2 @@
 # RoundRobinGolf
-App for tracking golf match scoring formats.
+A golf score tracker for various match formats.

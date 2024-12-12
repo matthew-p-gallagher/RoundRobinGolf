@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h1 class="mt-5 mb-4">Start a New Match</h1>
+        <form action="{{ url_for('start_match') }}" method="POST">
+            {% for i in range(1, 5) %}
+            <div class="mb-3">
+                <label for="player{{ i }}" class="form-label">Player {{ i }} Name</label>
+                <input type="text" class="form-control" id="player{{ i }}" name="player{{ i }}" value="Player {{ i }}"
+                    required>
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Start Match</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

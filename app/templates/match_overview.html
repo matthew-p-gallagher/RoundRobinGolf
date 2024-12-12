@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Match Overview</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Points Table</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Thru</th>
+                        <th>Wins</th>
+                        <th>Draws</th>
+                        <th>Losses</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in pointstable %}
+                    <tr>
+                        <td>{{ entry.player_name }}</td>
+                        <td>{{ entry.thru }}</td>
+                        <td>{{ entry.wins }}</td>
+                        <td>{{ entry.draws }}</td>
+                        <td>{{ entry.losses }}</td>
+                        <td>{{ entry.points }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h2>Scorecard</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        {% for hole in range(1, 19) %}
+                        <th class="scorecard-header">
+                            <a href="{{ url_for('hole', match_id=match.id, hole_num=hole) }}">
+                                <div class="hole-link">{{ hole }}</div>
+                            </a>
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in match.players %}
+                    <tr>
+                        <td>{{ player.name }}</td>
+                        {% for result in player.scorecard %}
+                        {% if result %}
+                        <td
+                            class="{% if result == 'W' %}table-success{% elif result == 'D' %}table-warning{% elif result == 'L' %}table-danger{% endif %}">
+                            {{ result }}
+                        </td>
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

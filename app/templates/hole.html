@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Hole {{ hole.num }}</h1>
+
+    {% if hole_incomplete_message %}
+    <div class="alert alert-warning" role="alert">
+        {{ hole_incomplete_message }}
+    </div>
+    {% endif %}
+
+    <form id="hole-form" method="POST">
+        <div class="row">
+            {% for holematch in hole.holematches %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Matchup {{ loop.index }}</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="button-group">
+                            <input class="btn-check hole-result" type="radio" name="winner{{ loop.index }}"
+                                id="player{{ holematch.player1_id }}" value="{{ holematch.player1_id }}" {% if
+                                previous_results and previous_results.get('winner' ~ loop.index)==holematch.player1_id
+                                %}checked{% endif %}>
+                            <label class="btn btn-outline-primary" for="player{{ holematch.player1_id }}">
+                                {{ holematch.player1.name }}
+                            </label>
+
+                            <input class="btn-check hole-result" type="radio" name="winner{{ loop.index }}"
+                                id="draw{{ loop.index }}" value="-1" {% if previous_results and
+                                previous_results.get('winner' ~ loop.index)==-1 %}checked{% endif %}>
+                            <label class="btn btn-outline-primary" for="draw{{ loop.index }}">
+                                Draw
+                            </label>
+
+                            <input class="btn-check hole-result" type="radio" name="winner{{ loop.index }}"
+                                id="player{{ holematch.player2_id }}" value="{{ holematch.player2_id }}" {% if
+                                previous_results and previous_results.get('winner' ~ loop.index)==holematch.player2_id
+                                %}checked{% endif %}>
+                            <label class="btn btn-outline-primary" for="player{{ holematch.player2_id }}">
+                                {{ holematch.player2.name }}
+                            </label>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </form>
+
+    <!-- Hole Navigation -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            {% if hole.num > 1 %}
+            <a href="{{ url_for('hole', match_id=match.id, hole_num=hole.num-1) }}" class="btn btn-secondary">Previous
+                Hole</a>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-center">
+            {% if hole.num == 18 %}
+            <a href="{{ url_for('finish_round', match_id=match.id) }}" class="btn btn-primary">Finish Round</a>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-end">
+            {% if hole.num < 18 %} <a href="{{ url_for('hole', match_id=match.id, hole_num=hole.num+1) }}"
+                class="btn btn-secondary">Next Hole</a>
+                {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('hole-form');
+        const radioButtons = document.querySelectorAll('.hole-result');
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function () {
+                const formData = new FormData(form);
+                fetch("{{ url_for('process_hole', match_id=match.id, hole_num=hole.num) }}", {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    });
+</script>
+
+{% endblock %}

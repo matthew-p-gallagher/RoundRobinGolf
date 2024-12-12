@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Round Summary</h1>
+
+    <h2>Final Results</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Player</th>
+                <th>Points</th>
+                <th>Wins</th>
+                <th>Draws</th>
+                <th>Losses</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in final_results %}
+            <tr class="{{ 'table-success' if loop.first else '' }}">
+                <td>{{ loop.index }}</td>
+                <td>{{ result.player_name }}</td>
+                <td>{{ result.points }}</td>
+                <td>{{ result.wins }}</td>
+                <td>{{ result.draws }}</td>
+                <td>{{ result.losses }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('match_overview', match_id=match.id) }}" class="btn btn-secondary">Back to Match Overview</a>
+    <a href="{{ url_for('matches') }}" class="btn btn-primary">All Matches</a>
+</div>
+{% endblock %}

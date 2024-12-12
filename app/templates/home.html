@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mt-5 mb-4">Welcome to Round Robin Golf</h1>
+        <p class="lead">Organize and manage your golf tournaments with ease.</p>
+        <img src="{{ url_for('static', filename='images/pic.png') }}" alt="Round Robin Golf"
+            class="img-fluid mt-3 mb-4">
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}
