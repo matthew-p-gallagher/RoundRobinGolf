@@ -18,7 +18,7 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark-green">
             <div class="container">
-                <a class="navbar-brand" href="{{ url_for('home') }}">Round Robin Golf</a>
+                <a class="navbar-brand" href="{{ url_for('main.home') }}">Round Robin Golf</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -26,13 +26,13 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                            <a class="nav-link" href="{{ url_for('main.home') }}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('matches') }}">Matches</a>
+                            <a class="nav-link" href="{{ url_for('matches.matches') }}">Matches</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('new_match') }}">New Match</a>
+                            <a class="nav-link" href="{{ url_for('matches.new_match') }}">New Match</a>
                         </li>
                     </ul>
                 </div>

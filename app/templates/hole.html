@@ -56,17 +56,18 @@
     <div class="row mt-4">
         <div class="col-md-4">
             {% if hole.num > 1 %}
-            <a href="{{ url_for('hole', match_id=match.id, hole_num=hole.num-1) }}" class="btn btn-secondary">Previous
+            <a href="{{ url_for('matches.hole', match_id=match.id, hole_num=hole.num-1) }}"
+                class="btn btn-secondary">Previous
                 Hole</a>
             {% endif %}
         </div>
         <div class="col-md-4 text-center">
             {% if hole.num == 18 %}
-            <a href="{{ url_for('finish_round', match_id=match.id) }}" class="btn btn-primary">Finish Round</a>
+            <a href="{{ url_for('matches.finish_round', match_id=match.id) }}" class="btn btn-primary">Finish Round</a>
             {% endif %}
         </div>
         <div class="col-md-4 text-end">
-            {% if hole.num < 18 %} <a href="{{ url_for('hole', match_id=match.id, hole_num=hole.num+1) }}"
+            {% if hole.num < 18 %} <a href="{{ url_for('matches.hole', match_id=match.id, hole_num=hole.num+1) }}"
                 class="btn btn-secondary">Next Hole</a>
                 {% endif %}
         </div>
@@ -81,7 +82,7 @@
         radioButtons.forEach(radio => {
             radio.addEventListener('change', function () {
                 const formData = new FormData(form);
-                fetch("{{ url_for('process_hole', match_id=match.id, hole_num=hole.num) }}", {
+                fetch("{{ url_for('matches.process_hole', match_id=match.id, hole_num=hole.num) }}", {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content

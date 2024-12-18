@@ -23,9 +23,10 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <a href="{{ url_for('match_overview', match_id=match.id) }}"
+                        <a href="{{ url_for('matches.match_overview', match_id=match.id) }}"
                             class="btn btn-primary btn-sm">View</a>
-                        <a href="{{ url_for('delete_match', match_id=match.id) }}" class="btn btn-danger btn-sm ml-2"
+                        <a href="{{ url_for('matches.delete_match', match_id=match.id) }}"
+                            class="btn btn-danger btn-sm ml-2"
                             onclick="return confirm('Are you sure you want to delete this match?');">Delete</a>
                     </td>
                 </tr>
@@ -35,7 +36,7 @@
         {% else %}
         <p>No matches found.</p>
         {% endif %}
-        <a href="{{ url_for('new_match') }}" class="btn btn-primary">Start New Match</a>
+        <a href="{{ url_for('matches.new_match') }}" class="btn btn-primary">Start New Match</a>
     </div>
 </div>
 {% endblock %}

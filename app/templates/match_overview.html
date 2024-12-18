@@ -43,7 +43,7 @@
                         <th>Player</th>
                         {% for hole in range(1, 19) %}
                         <th class="scorecard-header">
-                            <a href="{{ url_for('hole', match_id=match.id, hole_num=hole) }}">
+                            <a href="{{ url_for('matches.hole', match_id=match.id, hole_num=hole) }}">
                                 <div class="hole-link">{{ hole }}</div>
                             </a>
                         </th>

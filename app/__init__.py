@@ -44,7 +44,14 @@ def create_app(config_name="default"):
         )
 
     with app.app_context():
-        from . import routes
+        # Register blueprints
+        from .blueprints.main import bp as main_bp
+        from .blueprints.matches import bp as matches_bp
+        from .blueprints.users import bp as users_bp
+
+        app.register_blueprint(main_bp)
+        app.register_blueprint(matches_bp)
+        app.register_blueprint(users_bp)
 
         db.create_all()
 
