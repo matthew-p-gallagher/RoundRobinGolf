@@ -11,6 +11,7 @@
     {% endif %}
 
     <form id="hole-form" method="POST">
+        {{ form.csrf_token }}
         <div class="row">
             {% for holematch in hole.holematches %}
             <div class="col-md-6 mb-4">
@@ -82,6 +83,9 @@
                 const formData = new FormData(form);
                 fetch("{{ url_for('process_hole', match_id=match.id, hole_num=hole.num) }}", {
                     method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+                    },
                     body: formData
                 })
                     .then(data => {

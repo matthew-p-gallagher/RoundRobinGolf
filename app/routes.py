@@ -14,6 +14,7 @@ from services.match_service import MatchService
 from services.player_service import PlayerService
 from services.hole_service import HoleService
 from services.pointstable_service import PointstableService
+from app.forms import HoleForm
 
 
 @app.route("/")
@@ -83,12 +84,14 @@ def render_hole():
         None,
     )
 
+    form = HoleForm()
     return render_template(
         "hole.html",
         match=match,
         hole=hole,
-        previous_results=previous_results,
         hole_incomplete_message=hole_incomplete_message,
+        previous_results=previous_results,
+        form=form,
     )
 
 
