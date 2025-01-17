@@ -21,6 +21,7 @@ class HoleService:
         for matchup in matchups:
             holematch = HoleMatch(
                 hole_id=hole.id,
+                match_id=match_id,
                 player1_id=player_ids[matchup[0]],
                 player2_id=player_ids[matchup[1]],
             )
@@ -33,7 +34,7 @@ class HoleService:
         return Hole.query.get(hole_id)
 
     @staticmethod
-    def get_hole_by_match_num(match_id, hole_num):
+    def get_hole_by_match_hole_num(match_id, hole_num):
         return Hole.query.filter_by(match_id=match_id, num=hole_num).first()
 
     @staticmethod

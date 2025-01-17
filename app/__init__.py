@@ -1,11 +1,15 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
+from flask_login import LoginManager
 import os
 from datetime import datetime
 
 db = SQLAlchemy()
 csrf = CSRFProtect()
+login = LoginManager()
+login.login_view = "auth.login"
+login.login_message_category = "info"
 
 
 def create_app(config_name="default"):
@@ -22,6 +26,14 @@ def create_app(config_name="default"):
     # Initialize extensions
     db.init_app(app)
     csrf.init_app(app)
+    login.init_app(app)
+
+    # User loader callback
+    from app.models import User
+
+    @login.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
     # Register error handlers
     @app.errorhandler(404)
@@ -44,14 +56,15 @@ def create_app(config_name="default"):
         )
 
     with app.app_context():
-        # Register blueprints
         from .blueprints.main import bp as main_bp
         from .blueprints.matches import bp as matches_bp
         from .blueprints.users import bp as users_bp
+        from .blueprints.auth import bp as auth_bp
 
         app.register_blueprint(main_bp)
-        app.register_blueprint(matches_bp)
+        app.register_blueprint(matches_bp, url_prefix="/matches")
         app.register_blueprint(users_bp)
+        app.register_blueprint(auth_bp, url_prefix="/auth")
 
         db.create_all()
 

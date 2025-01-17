@@ -1,43 +1,64 @@
-from app.models import Match, Hole, Player, PointsTable, HoleMatch
-from services.player_service import PlayerService
+from app.models import db, Match, Player, PointsTable, HoleMatch, Hole
 from services.hole_service import HoleService
-from services.pointstable_service import PointstableService
-from app import db
+from flask_login import current_user
 
 
 class MatchService:
     @staticmethod
-    def create_match(player_names):
-        match = Match()
-        db.session.add(match)
-        db.session.flush()
-
-        # Create players and associate them with the match
-        # TODO sort the 1 indexing
-        player_ids = []
-        for index, name in enumerate(player_names, start=1):
-            player = PlayerService.create_player(name, match.id)
-            player_ids.append(player.id)
-
-        # Create 18 holes for the match
-        holes = []
-        for hole_number in range(1, 19):
-            hole = HoleService.create_hole(hole_number, match.id, player_ids)
-            db.session.add(hole)
-            holes.append(hole)
-
-        PointstableService.create_pointstable(match.id)
-
-        db.session.commit()
-        return match
+    def get_all_matches():
+        """Get all matches for the current user."""
+        return (
+            Match.query.filter_by(user_id=current_user.id)
+            .order_by(Match.created_at.desc())
+            .all()
+        )
 
     @staticmethod
     def get_match(match_id):
-        return Match.query.get(match_id)
+        """Get a specific match, ensuring it belongs to the current user."""
+        return Match.query.filter_by(
+            id=match_id, user_id=current_user.id
+        ).first_or_404()
 
     @staticmethod
-    def get_all_matches():
-        return Match.query.all()
+    def create_match(player_names):
+        """Create a new match with the given player names."""
+        if len(player_names) != 4:
+            raise ValueError("Exactly 4 player names are required")
+
+        try:
+            match = Match(user_id=current_user.id)
+            db.session.add(match)
+            db.session.flush()
+
+            # Create players
+            players = []
+            for name in player_names:
+                if not name.strip():
+                    raise ValueError("Player names cannot be empty")
+                player = Player(name=name, match=match)
+                players.append(player)
+                db.session.add(player)
+            db.session.flush()
+
+            # Create holes
+            for i in range(1, 19):
+                hole = HoleService.create_hole(
+                    i, match.id, [player.id for player in players]
+                )
+                db.session.add(hole)
+
+            # Create points table entries
+            for player in players:
+                points_table = PointsTable(match_id=match.id, player_id=player.id)
+                db.session.add(points_table)
+
+            db.session.commit()
+            return match
+
+        except Exception as e:
+            db.session.rollback()
+            raise Exception(f"Failed to create match: {str(e)}")
 
     @staticmethod
     def delete_match(match_id):
@@ -50,16 +71,9 @@ class MatchService:
                 )
             ).delete(synchronize_session=False)
 
-            # Delete related PointsTable entries
             PointsTable.query.filter_by(match_id=match_id).delete()
-
-            # Delete related Hole entries
             Hole.query.filter_by(match_id=match_id).delete()
-
-            # Delete related Player entries
             Player.query.filter_by(match_id=match_id).delete()
-
-            # Delete the Match itself
             db.session.delete(match)
 
             db.session.commit()

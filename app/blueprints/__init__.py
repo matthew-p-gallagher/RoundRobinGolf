@@ -1,3 +1,0 @@
-"""
-Blueprint initialization module.
-"""

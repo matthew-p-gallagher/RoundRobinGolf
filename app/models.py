@@ -2,12 +2,23 @@ from . import db
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.dialects.sqlite import JSON
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256))
+    is_active = db.Column(db.Boolean, default=True)
+    matches = relationship("Match", backref="creator", lazy=True)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -15,7 +26,7 @@ class User(db.Model):
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
+    name = db.Column(db.String(80), nullable=False)
     # order = db.Column(db.Integer, nullable=False)
     # handicap = db.Column(db.Float, nullable=False)
     match_id = db.Column(db.Integer, db.ForeignKey("match.id"), nullable=False)
@@ -27,10 +38,13 @@ class Player(db.Model):
 
 class Match(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     players = relationship("Player", backref="match", lazy=True)
     holes = relationship("Hole", backref="match", lazy=True)
     pointstable = relationship("PointsTable", backref="match", lazy=True)
+    holematches = relationship("HoleMatch", backref="match", lazy=True)
     completed = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     def __repr__(self):
         return f"<Match {self.id}>"
@@ -63,6 +77,7 @@ class Hole(db.Model):
 class HoleMatch(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     hole_id = db.Column(db.Integer, db.ForeignKey("hole.id"), nullable=False)
+    match_id = db.Column(db.Integer, db.ForeignKey("match.id"), nullable=False)
     player1_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
     player2_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=False)
     winner_id = db.Column(db.Integer, db.ForeignKey("player.id"), nullable=True)
