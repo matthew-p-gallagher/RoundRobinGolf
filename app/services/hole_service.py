@@ -1,6 +1,6 @@
 from app.models import Hole, HoleMatch
-from services.player_service import PlayerService
-from services.pointstable_service import PointstableService
+from app.services.player_service import PlayerService
+from app.services.pointstable_service import PointstableService
 from app import db
 
 

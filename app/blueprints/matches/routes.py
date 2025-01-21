@@ -10,9 +10,9 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from app.models import db
-from services.match_service import MatchService
-from services.hole_service import HoleService
-from services.pointstable_service import PointstableService
+from app.services.match_service import MatchService
+from app.services.hole_service import HoleService
+from app.services.pointstable_service import PointstableService
 from app.forms import HoleForm, MatchForm
 from . import bp
 

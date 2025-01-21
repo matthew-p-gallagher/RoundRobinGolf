@@ -1,5 +1,5 @@
 from app.models import db, Match, Player, PointsTable, HoleMatch, Hole
-from services.hole_service import HoleService
+from app.services.hole_service import HoleService
 from flask_login import current_user
 
 
