@@ -1,6 +1,6 @@
 from typing import List, Dict
 from app.models import PointsTable, Player
-from services.player_service import PlayerService
+from app.services.player_service import PlayerService
 from app import db
 
 
