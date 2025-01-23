@@ -4,6 +4,8 @@ from app import db
 
 
 class PlayerService:
+    VALID_RESULTS = {"W", "L", "D"}
+
     @staticmethod
     def create_player(name: str, match_id: int) -> Player:
         player = Player(name=name, match_id=match_id)
@@ -13,7 +15,16 @@ class PlayerService:
 
     @staticmethod
     def update_scorecard(player_id: int, hole: int, result: str) -> None:
+        if hole < 1 or hole > 18:
+            raise ValueError("Hole number must be between 1 and 18")
+
+        if result not in PlayerService.VALID_RESULTS:
+            raise ValueError("Result must be one of: W (win), L (loss), or D (draw)")
+
         player = Player.query.get(player_id)
+        if not player:
+            raise ValueError("Player not found")
+
         scorecard = player.scorecard.copy()
         scorecard[hole - 1] = result
         player.scorecard = scorecard
@@ -26,7 +37,7 @@ class PlayerService:
     @staticmethod
     def get_player_name(player_id: int):
         player = Player.query.get(player_id)
-        return player.name
+        return player.name if player else None
 
     @staticmethod
     def get_all_players(match_id: int) -> List[Player]:

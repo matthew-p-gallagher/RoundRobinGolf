@@ -11,7 +11,6 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256))
-    is_active = db.Column(db.Boolean, default=True)
     matches = relationship("Match", backref="creator", lazy=True)
 
     def set_password(self, password):
@@ -85,6 +84,10 @@ class HoleMatch(db.Model):
     player1 = relationship("Player", foreign_keys=[player1_id])
     player2 = relationship("Player", foreign_keys=[player2_id])
     winner = relationship("Player", foreign_keys=[winner_id])
+
+    __table_args__ = (
+        db.CheckConstraint("player1_id != player2_id", name="check_different_players"),
+    )
 
     def __repr__(self):
         return f"<HoleMatch {self.id} for Hole {self.hole_id}>"

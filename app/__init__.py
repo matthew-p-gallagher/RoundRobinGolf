@@ -21,7 +21,12 @@ def create_app(config_name="default"):
     except OSError:
         pass
 
+    # Load the default configuration
     app.config.from_pyfile("config.py")
+
+    # Override config with test config if testing
+    if config_name == "testing":
+        app.config.update(TESTING=True, SQLALCHEMY_DATABASE_URI="sqlite:///:memory:")
 
     # Initialize extensions
     db.init_app(app)

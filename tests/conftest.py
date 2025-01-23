@@ -1,14 +1,12 @@
 import pytest
 from app import create_app, db
 from app.models import User, Player, Match, PointsTable, Hole, HoleMatch
+from flask_login import login_user
 
 
 @pytest.fixture
 def app():
-    app = create_app()
-    app.config["TESTING"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-
+    app = create_app("testing")
     return app
 
 
@@ -38,6 +36,13 @@ def test_user(_db):
     _db.session.add(user)
     _db.session.commit()
     return user
+
+
+@pytest.fixture
+def logged_in_user(_db, test_user):
+    """Fixture for a logged-in user"""
+    login_user(test_user)
+    return test_user
 
 
 @pytest.fixture
