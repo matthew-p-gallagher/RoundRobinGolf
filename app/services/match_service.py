@@ -26,6 +26,11 @@ class MatchService:
         if len(player_names) != 4:
             raise ValueError("Exactly 4 player names are required")
 
+        # Validate player names before starting any database operations
+        for name in player_names:
+            if not name.strip():
+                raise ValueError("Player names cannot be empty")
+
         try:
             match = Match(user_id=current_user.id)
             db.session.add(match)
@@ -34,8 +39,6 @@ class MatchService:
             # Create players
             players = []
             for name in player_names:
-                if not name.strip():
-                    raise ValueError("Player names cannot be empty")
                 player = Player(name=name, match=match)
                 players.append(player)
                 db.session.add(player)

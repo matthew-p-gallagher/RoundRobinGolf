@@ -38,25 +38,11 @@ def test_create_match_empty_name(logged_in_user):
         MatchService.create_match(["Player 1", "", "Player 3", "Player 4"])
 
 
-@pytest.fixture
-def service_created_match(logged_in_user):
-    """Fixture that creates a match using the service method"""
-    player_names = ["Player 1", "Player 2", "Player 3", "Player 4"]
-    return MatchService.create_match(player_names)
-
-
-@pytest.fixture
-def matches(logged_in_user):
-    """Fixture creating multiple test matches using the service"""
-    matches = [
-        MatchService.create_match([f"Player {i}" for i in range(1, 5)]),
-        MatchService.create_match([f"Player {i}" for i in range(5, 9)]),
-    ]
-    return matches
-
-
-def test_get_all_matches(logged_in_user, matches):
+def test_get_all_matches(logged_in_user, service_created_match):
     """Test retrieving all matches for a user"""
+    # Create a second match
+    MatchService.create_match([f"Player {i}" for i in range(5, 9)])
+
     matches = MatchService.get_all_matches()
     assert len(matches) == 2
     assert all(match.user_id == logged_in_user.id for match in matches)
