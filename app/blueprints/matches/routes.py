@@ -78,7 +78,7 @@ def finish_round(match_id):
             f"Cannot finish round. Hole {incomplete_hole.num} is not complete.", "error"
         )
         return redirect(
-            url_for("holes.hole", match_id=match_id, hole_num=incomplete_hole.num)
+            url_for("matches.hole", match_id=match_id, hole_num=incomplete_hole.num)
         )
 
     final_results = PointstableService.get_formatted_pointstable(match_id)
