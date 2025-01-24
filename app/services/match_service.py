@@ -1,6 +1,8 @@
 from app.models import db, Match, Player, PointsTable, HoleMatch, Hole
 from app.services.hole_service import HoleService
+from app.services.pointstable_service import PointstableService
 from flask_login import current_user
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class MatchService:
@@ -44,17 +46,14 @@ class MatchService:
                 db.session.add(player)
             db.session.flush()
 
-            # Create holes
+            # Create holes and points table entries in a single transaction
             for i in range(1, 19):
                 hole = HoleService.create_hole(
-                    i, match.id, [player.id for player in players]
+                    i, match.id, [player.id for player in players], commit=False
                 )
-                db.session.add(hole)
 
             # Create points table entries
-            for player in players:
-                points_table = PointsTable(match_id=match.id, player_id=player.id)
-                db.session.add(points_table)
+            PointstableService.create_pointstable(match.id, commit=False)
 
             db.session.commit()
             return match
@@ -65,20 +64,25 @@ class MatchService:
 
     @staticmethod
     def delete_match(match_id):
-        match = Match.query.get(match_id)
-        if match:
-            # Delete related HoleMatch entries
-            HoleMatch.query.filter(
-                HoleMatch.hole_id.in_(
-                    Hole.query.with_entities(Hole.id).filter_by(match_id=match_id)
-                )
-            ).delete(synchronize_session=False)
+        """Delete a match and all related entities."""
+        try:
+            match = Match.query.get(match_id)
+            if match:
+                # Delete related HoleMatch entries
+                HoleMatch.query.filter(
+                    HoleMatch.hole_id.in_(
+                        Hole.query.with_entities(Hole.id).filter_by(match_id=match_id)
+                    )
+                ).delete(synchronize_session=False)
 
-            PointsTable.query.filter_by(match_id=match_id).delete()
-            Hole.query.filter_by(match_id=match_id).delete()
-            Player.query.filter_by(match_id=match_id).delete()
-            db.session.delete(match)
+                PointsTable.query.filter_by(match_id=match_id).delete()
+                Hole.query.filter_by(match_id=match_id).delete()
+                Player.query.filter_by(match_id=match_id).delete()
+                db.session.delete(match)
 
-            db.session.commit()
-            return True
-        return False
+                db.session.commit()
+                return True
+            return False
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise Exception(f"Failed to delete match: {str(e)}")

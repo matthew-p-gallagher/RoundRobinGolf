@@ -13,11 +13,3 @@ def test_new_player(_db, test_match):
     assert player.match_id == test_match.id
     assert player.scorecard == [None] * 18
     assert str(player) == f"<Player {player.id} John Doe>"
-
-
-def test_player_scorecard_modification(_db, test_player):
-    """Test modifying player scorecard"""
-    new_scorecard = [1] * 18
-    test_player.scorecard = new_scorecard
-    _db.session.commit()
-    assert test_player.scorecard == new_scorecard

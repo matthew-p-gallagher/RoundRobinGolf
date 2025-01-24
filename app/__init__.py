@@ -63,12 +63,10 @@ def create_app(config_name="default"):
     with app.app_context():
         from .blueprints.main import bp as main_bp
         from .blueprints.matches import bp as matches_bp
-        from .blueprints.users import bp as users_bp
         from .blueprints.auth import bp as auth_bp
 
         app.register_blueprint(main_bp)
         app.register_blueprint(matches_bp, url_prefix="/matches")
-        app.register_blueprint(users_bp)
         app.register_blueprint(auth_bp, url_prefix="/auth")
 
         db.create_all()
