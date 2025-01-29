@@ -55,7 +55,7 @@ def test_get_match(logged_in_user, service_created_match):
     assert match.user_id == logged_in_user.id
 
 
-def test_delete_match(service_created_match):
+def test_delete_match(service_created_match, _db):
     """Test deleting a match and all related entities"""
     match_id = service_created_match.id
 
@@ -64,7 +64,7 @@ def test_delete_match(service_created_match):
     assert result is True
 
     # Verify everything was deleted
-    assert Match.query.get(match_id) is None
+    assert _db.session.get(Match, match_id) is None
     assert Player.query.filter_by(match_id=match_id).first() is None
     assert Hole.query.filter_by(match_id=match_id).first() is None
     assert PointsTable.query.filter_by(match_id=match_id).first() is None

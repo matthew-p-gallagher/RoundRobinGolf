@@ -66,7 +66,7 @@ class MatchService:
     def delete_match(match_id):
         """Delete a match and all related entities."""
         try:
-            match = Match.query.get(match_id)
+            match = db.session.get(Match, match_id)
             if match:
                 # Delete related HoleMatch entries
                 HoleMatch.query.filter(

@@ -47,7 +47,7 @@ class HoleService:
     @staticmethod
     def get_hole(hole_id: int):
         """Get a hole by ID."""
-        return Hole.query.get(hole_id)
+        return db.session.get(Hole, hole_id)
 
     @staticmethod
     def get_hole_by_match_hole_num(match_id, hole_num):
@@ -112,13 +112,13 @@ class HoleService:
     @staticmethod
     def get_next_hole_num(hole_id: int) -> int:
         """Get the next hole number."""
-        current_hole = Hole.query.get(hole_id)
+        current_hole = db.session.get(Hole, hole_id)
         return current_hole.num + 1
 
     @staticmethod
     def get_previous_results(hole_id: int) -> dict:
         """Get previous hole results."""
-        hole = Hole.query.get(hole_id)
+        hole = db.session.get(Hole, hole_id)
         return {
             f"winner{i+1}": holematch.winner_id
             for i, holematch in enumerate(hole.holematches)

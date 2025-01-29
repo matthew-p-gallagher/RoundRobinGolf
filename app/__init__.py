@@ -38,7 +38,7 @@ def create_app(config_name="default"):
 
     @login.user_loader
     def load_user(id):
-        return User.query.get(int(id))
+        return db.session.get(User, int(id))
 
     # Register error handlers
     @app.errorhandler(404)

@@ -83,12 +83,12 @@ def test_match_overview_404(client, logged_in_user):
     assert response.status_code == 404
 
 
-def test_delete_match(client, service_created_match, logged_in_user):
+def test_delete_match(client, service_created_match, logged_in_user, _db):
     """Test deleting a match"""
     match_id = service_created_match.id
     response = client.get(f"/matches/delete/{match_id}", follow_redirects=True)
     assert response.status_code == 200
-    assert Match.query.get(match_id) is None
+    assert _db.session.get(Match, match_id) is None
 
 
 def test_finish_round_incomplete(client, service_created_match, logged_in_user):
@@ -133,12 +133,12 @@ def test_match_other_user_404(client, logged_in_user, other_user_match):
     assert response.status_code == 404
 
 
-def test_delete_other_user_match(client, logged_in_user, other_user_match):
+def test_delete_other_user_match(client, logged_in_user, other_user_match, _db):
     """Test that deleting another user's match fails"""
     match_id = other_user_match.id
     response = client.get(f"/matches/delete/{match_id}", follow_redirects=True)
     assert response.status_code == 404
-    assert Match.query.get(match_id) is not None
+    assert _db.session.get(Match, match_id) is not None
 
 
 def test_hole_invalid_number(client, service_created_match, logged_in_user):

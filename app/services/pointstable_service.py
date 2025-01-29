@@ -55,7 +55,7 @@ class PointstableService:
     @staticmethod
     def get_pointsrow(match_id: int, player_id: int) -> PointsTable:
         """Get a specific points table row."""
-        return PointsTable.query.get((match_id, player_id))
+        return db.session.get(PointsTable, (match_id, player_id))
 
     @staticmethod
     def get_pointstable(match_id: int) -> List[PointsTable]:
@@ -97,11 +97,11 @@ class PointstableService:
             commit: Whether to commit the transaction (default: True)
         """
         try:
-            player = Player.query.get(player_id)
+            player = db.session.get(Player, player_id)
             if not player:
                 raise ValueError("Player not found")
 
-            pointsrow = PointsTable.query.get((player.match_id, player_id))
+            pointsrow = db.session.get(PointsTable, (player.match_id, player_id))
             if not pointsrow:
                 raise ValueError("Points table row not found")
 
@@ -153,7 +153,7 @@ class PointstableService:
     def delete_pointstable(pointstable_id: int) -> None:
         """Delete a points table row."""
         try:
-            pointstable = PointsTable.query.get(pointstable_id)
+            pointstable = db.session.get(PointsTable, pointstable_id)
             if pointstable:
                 db.session.delete(pointstable)
                 db.session.commit()

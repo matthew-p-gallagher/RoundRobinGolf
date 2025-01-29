@@ -47,7 +47,7 @@ class PlayerService:
             raise ValueError("Result must be one of: W (win), L (loss), or D (draw)")
 
         try:
-            player = Player.query.get(player_id)
+            player = db.session.get(Player, player_id)
             if not player:
                 raise ValueError("Player not found")
 
@@ -66,12 +66,12 @@ class PlayerService:
     @staticmethod
     def get_player(player_id: int):
         """Get a player by ID."""
-        return Player.query.get(player_id)
+        return db.session.get(Player, player_id)
 
     @staticmethod
     def get_player_name(player_id: int):
         """Get a player's name."""
-        player = Player.query.get(player_id)
+        player = db.session.get(Player, player_id)
         return player.name if player else None
 
     @staticmethod
@@ -88,7 +88,7 @@ class PlayerService:
             commit: Whether to commit the transaction (default: True)
         """
         try:
-            player = Player.query.get(player_id)
+            player = db.session.get(Player, player_id)
             if player:
                 db.session.delete(player)
                 if commit:
