@@ -63,6 +63,8 @@ def match_overview(match_id):
 @bp.route("/delete/<int:match_id>")
 @login_required
 def delete_match(match_id):
+    match = MatchService.get_match(match_id)
+    # get_match will return 404 if match doesn't exist or belong to current user
     MatchService.delete_match(match_id)
     return redirect(url_for("matches.matches"))
 

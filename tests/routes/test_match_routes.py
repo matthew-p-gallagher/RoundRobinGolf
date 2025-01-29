@@ -144,7 +144,7 @@ def test_delete_other_user_match(client, logged_in_user, other_user_match):
 def test_hole_invalid_number(client, service_created_match, logged_in_user):
     """Test accessing an invalid hole number"""
     response = client.get(f"/matches/{service_created_match.id}/hole/999")
-    assert response.status_code == 200
+    assert response.status_code == 404
 
 
 def test_process_hole_with_draws(client, service_created_match, logged_in_user):
