@@ -123,7 +123,45 @@ def test_successful_registration(client):
         follow_redirects=True,
     )
     assert response.status_code == 200
-    assert User.query.filter_by(username="newuser").first() is not None
+    # Verify user was created
+    user = User.query.filter_by(username="newuser").first()
+    assert user is not None
+    # Verify success message
+    assert b"Registration successful" in response.data
+    # Verify redirect to home page
+    assert b"Home" in response.data
+
+
+def test_registration_auto_login(client):
+    """Test that users are automatically logged in after registration"""
+    # Get CSRF token
+    response = client.get("/auth/register")
+    html = response.data.decode()
+    csrf_token = html.split('name="csrf_token" type="hidden" value="')[1].split('"')[0]
+
+    # Register new user
+    response = client.post(
+        "/auth/register",
+        data={
+            "username": "autologinuser",
+            "email": "autologin@example.com",
+            "password": "password123",
+            "password2": "password123",
+            "csrf_token": csrf_token,
+        },
+        follow_redirects=True,
+    )
+
+    # Verify user is logged in
+    response = client.get("/matches/")  # This route requires login
+    assert response.status_code == 200
+    assert b"matches" in response.data.lower()  # Can access protected route
+
+    # Try accessing register page (should redirect since authenticated)
+    response = client.get("/auth/register")
+    assert response.status_code == 302  # Redirect status code
+    response = client.get("/auth/register", follow_redirects=True)
+    assert b"Home" in response.data  # Redirects to home as authenticated user
 
 
 def test_duplicate_registration(client, test_user):
